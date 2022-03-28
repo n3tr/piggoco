@@ -8,8 +8,8 @@
   },
   "scripts": {
     "test": "jest",
-    "start": "fastify start -l info dist/app.js",
-    "build:ts": "tsc",
+    "start": "npm run build && fastify start -l info dist/app.js",
+    "build": "prisma generate && tsc",
     "dev": "rimraf dist && tsc && concurrently -k -p \"[{name}]\" -n \"TypeScript,App\" -c \"yellow.bold,cyan.bold\" \"tsc -w\" \"fastify start --ignore-watch=.ts$ -w -l info -P dist/app.js\"",
     "prepare": "husky install",
     "lint": "eslint --ext .js,.ts ."
