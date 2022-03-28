@@ -9,7 +9,7 @@ COPY tsconfig.json ./tsconfig.json
 
 RUN npm run build
 
-ENV PORT 8080
 EXPOSE 8080
+EXPOSE 80
 
 ENTRYPOINT ["npm","start"]

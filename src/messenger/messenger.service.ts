@@ -3,12 +3,16 @@ import { JsonObject } from 'type-fest';
 import { FacebookPageToken } from '../config';
 import { extractMessage } from '../utils/extract-message';
 import { WalletService } from '../wallet/wallet.service';
-import { TransactionType, WalletTransaction } from '../types';
+import { TransactionType } from '../types';
 import { Category, Transaction, TransactionTag } from '@prisma/client';
 
 const SEND_MESSENGE_ENDPOINT = 'https://graph.facebook.com/v13.0/me/messages';
 const TOKEN = FacebookPageToken;
 
+const EXPENSE_IMAGE =
+  'https://spendot.s3.ap-southeast-1.amazonaws.com/expense.jpg';
+const INCOME_IMAGE =
+  'https://spendot.s3.ap-southeast-1.amazonaws.com/income.jpg';
 export class MessengerService {
   private walletService: WalletService;
   constructor(options: { walletService: WalletService }) {
@@ -53,6 +57,9 @@ export class MessengerService {
         ? `Spend ${amount}`
         : `Receive ${amount}`;
 
+    const image =
+      type === TransactionType.EXPENSE ? EXPENSE_IMAGE : INCOME_IMAGE;
+
     let subtitle = '';
     if (title) {
       subtitle += title;
@@ -73,8 +80,7 @@ export class MessengerService {
           elements: [
             {
               title: computedTitle,
-              image_url:
-                'https://raw.githubusercontent.com/fbsamples/original-coast-clothing/main/public/styles/male-work.jpg',
+              image_url: image,
               subtitle: subtitle || undefined,
               buttons: [
                 {
