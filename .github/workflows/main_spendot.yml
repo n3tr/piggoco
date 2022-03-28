@@ -15,23 +15,41 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-
-      - name: Set up Node.js version
-        uses: actions/setup-node@v1
+      - uses: azure/docker-login@v1
         with:
-          node-version: '16.x'
-
-      - name: npm install, build, and test
-        run: |
-          npm install
-          npm run build --if-present
-          npm run test --if-present
-
-      - name: Upload artifact for deployment job
-        uses: actions/upload-artifact@v2
+          login-server: spendot.azurecr.io
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+      - uses: azure/docker-login@v1
         with:
-          name: node-app
-          path: .
+          login-server: index.docker.io
+          username: ${{ secrets.DOCKERIO_USERNAME }}
+          password: ${{ secrets.DOCKERIO_PASSWORD }}
+      - run: |
+          docker build . -t spendot.azurecr.io/spendot:${{ github.sha }}
+          docker push spendot.azurecr.io/spendot:${{ github.sha }}
+  # build:
+  #   runs-on: ubuntu-latest
+
+  #   steps:
+  #     - uses: actions/checkout@v2
+
+  #     - name: Set up Node.js version
+  #       uses: actions/setup-node@v1
+  #       with:
+  #         node-version: '16.x'
+
+  #     - name: npm install, build, and test
+  #       run: |
+  #         npm install
+  #         npm run build --if-present
+  #         npm run test --if-present
+
+  #     - name: Upload artifact for deployment job
+  #       uses: actions/upload-artifact@v2
+  #       with:
+  #         name: node-app
+  #         path: .
 
   deploy:
     runs-on: ubuntu-latest
@@ -41,10 +59,10 @@ jobs:
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
     steps:
-      - name: Download artifact from build job
-        uses: actions/download-artifact@v2
-        with:
-          name: node-app
+      # - name: Download artifact from build job
+      #   uses: actions/download-artifact@v2
+      #   with:
+      #     name: node-app
 
       - name: 'Deploy to Azure Web App'
         id: deploy-to-webapp
@@ -53,4 +71,5 @@ jobs:
           app-name: 'Spendot'
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_71E8A7AB08EB4418A0783B50129C1025 }}
-          package: .
+          images: 'spendot.azurecr.io/myapp:${{ github.sha }}'
+          # package: .
