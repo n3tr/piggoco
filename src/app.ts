@@ -38,6 +38,10 @@ const app: FastifyPluginAsync<AppOptions> = async (
     options: opts,
   });
 
+  fastify.get('/', (_, reply) => {
+    reply.send({ status: 'up' });
+  });
+
   // This loads all plugins defined in routes
   // define your routes in one of these
   // Messenger
