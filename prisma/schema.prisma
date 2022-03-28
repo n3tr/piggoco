@@ -1,0 +1,70 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider          = "sqlserver"
+  url               = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+}
+
+model User {
+  id    String  @id @default(cuid()) @db.VarChar(32)
+  email String? @unique
+
+  fbId String? @unique @db.VarChar(32)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  wallets Wallet[]
+}
+
+model Wallet {
+  id     String @id @default(cuid()) @db.VarChar(32)
+  userId String @db.VarChar(32)
+  name   String @default("default")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  owner        User          @relation(fields: [userId], references: [id])
+  transactions Transaction[]
+}
+
+model Category {
+  walletId String  @db.VarChar(32)
+  slug     String  @db.NVarChar(32)
+  title    String? @db.NVarChar(64)
+
+  @@unique([walletId, slug])
+}
+
+model TransactionTag {
+  transactionId String @db.VarChar(32)
+  tag           String @db.NVarChar(32)
+
+  transaction Transaction @relation(fields: [transactionId], references: [id])
+
+  @@unique([transactionId, tag])
+}
+
+model Transaction {
+  id       String  @id @default(cuid()) @db.VarChar(32)
+  walletId String  @db.VarChar(32)
+  type     String  @db.VarChar(10)
+  amount   Decimal
+  title    String? @db.NVarChar(256)
+
+  tags TransactionTag[]
+
+  category String? @db.NVarChar(32)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  wallet Wallet @relation(fields: [walletId], references: [id])
+}
