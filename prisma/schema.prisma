@@ -31,25 +31,21 @@ model Wallet {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  owner        User          @relation(fields: [userId], references: [id])
+  owner        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  categories  Category[]
   transactions Transaction[]
 }
 
 model Category {
+  id       String  @id @default(cuid()) @db.VarChar(32)
   walletId String  @db.VarChar(32)
   slug     String  @db.NVarChar(32)
   title    String? @db.NVarChar(64)
 
+  transactions Transaction[]
+  wallet Wallet @relation(fields: [walletId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
   @@unique([walletId, slug])
-}
-
-model TransactionTag {
-  transactionId String @db.VarChar(32)
-  tag           String @db.NVarChar(32)
-
-  transaction Transaction @relation(fields: [transactionId], references: [id])
-
-  @@unique([transactionId, tag])
 }
 
 model Transaction {
@@ -59,12 +55,23 @@ model Transaction {
   amount   Decimal
   title    String? @db.NVarChar(256)
 
-  tags TransactionTag[]
-
-  category String? @db.NVarChar(32)
+  categoryId String? @db.VarChar(32)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  wallet Wallet @relation(fields: [walletId], references: [id])
+  wallet Wallet @relation(fields: [walletId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  category Category? @relation(fields: [categoryId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  tags TransactionTag[]
+}
+
+model TransactionTag {
+  transactionId String @db.VarChar(32)
+  tag           String @db.NVarChar(32)
+
+  transaction Transaction @relation(fields: [transactionId], references: [id], onDelete: Cascade)
+
+  @@unique([transactionId, tag])
 }

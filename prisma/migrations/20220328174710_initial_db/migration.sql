@@ -26,17 +26,12 @@ CREATE TABLE [dbo].[Wallet] (
 
 -- CreateTable
 CREATE TABLE [dbo].[Category] (
+    [id] VARCHAR(32) NOT NULL,
     [walletId] VARCHAR(32) NOT NULL,
     [slug] NVARCHAR(32) NOT NULL,
-    [title] VARCHAR(32),
+    [title] NVARCHAR(64),
+    CONSTRAINT [Category_pkey] PRIMARY KEY ([id]),
     CONSTRAINT [Category_walletId_slug_key] UNIQUE ([walletId],[slug])
-);
-
--- CreateTable
-CREATE TABLE [dbo].[TransactionTag] (
-    [transactionId] VARCHAR(32) NOT NULL,
-    [tag] NVARCHAR(32) NOT NULL,
-    CONSTRAINT [TransactionTag_transactionId_tag_key] UNIQUE ([transactionId],[tag])
 );
 
 -- CreateTable
@@ -46,20 +41,33 @@ CREATE TABLE [dbo].[Transaction] (
     [type] VARCHAR(10) NOT NULL,
     [amount] DECIMAL(32,16) NOT NULL,
     [title] NVARCHAR(256),
-    [category] NVARCHAR(32),
+    [categoryId] VARCHAR(32),
     [createdAt] DATETIME2 NOT NULL CONSTRAINT [Transaction_createdAt_df] DEFAULT CURRENT_TIMESTAMP,
     [updatedAt] DATETIME2 NOT NULL,
     CONSTRAINT [Transaction_pkey] PRIMARY KEY ([id])
 );
 
--- AddForeignKey
-ALTER TABLE [dbo].[Wallet] ADD CONSTRAINT [Wallet_userId_fkey] FOREIGN KEY ([userId]) REFERENCES [dbo].[User]([id]) ON DELETE NO ACTION ON UPDATE CASCADE;
+-- CreateTable
+CREATE TABLE [dbo].[TransactionTag] (
+    [transactionId] VARCHAR(32) NOT NULL,
+    [tag] NVARCHAR(32) NOT NULL,
+    CONSTRAINT [TransactionTag_transactionId_tag_key] UNIQUE ([transactionId],[tag])
+);
 
 -- AddForeignKey
-ALTER TABLE [dbo].[TransactionTag] ADD CONSTRAINT [TransactionTag_transactionId_fkey] FOREIGN KEY ([transactionId]) REFERENCES [dbo].[Transaction]([id]) ON DELETE NO ACTION ON UPDATE CASCADE;
+ALTER TABLE [dbo].[Wallet] ADD CONSTRAINT [Wallet_userId_fkey] FOREIGN KEY ([userId]) REFERENCES [dbo].[User]([id]) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE [dbo].[Transaction] ADD CONSTRAINT [Transaction_walletId_fkey] FOREIGN KEY ([walletId]) REFERENCES [dbo].[Wallet]([id]) ON DELETE NO ACTION ON UPDATE CASCADE;
+ALTER TABLE [dbo].[Category] ADD CONSTRAINT [Category_walletId_fkey] FOREIGN KEY ([walletId]) REFERENCES [dbo].[Wallet]([id]) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE [dbo].[Transaction] ADD CONSTRAINT [Transaction_walletId_fkey] FOREIGN KEY ([walletId]) REFERENCES [dbo].[Wallet]([id]) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE [dbo].[Transaction] ADD CONSTRAINT [Transaction_categoryId_fkey] FOREIGN KEY ([categoryId]) REFERENCES [dbo].[Category]([id]) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+-- AddForeignKey
+ALTER TABLE [dbo].[TransactionTag] ADD CONSTRAINT [TransactionTag_transactionId_fkey] FOREIGN KEY ([transactionId]) REFERENCES [dbo].[Transaction]([id]) ON DELETE CASCADE ON UPDATE CASCADE;
 
 COMMIT TRAN;
 

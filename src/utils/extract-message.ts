@@ -1,26 +1,36 @@
-type Result = {
-  total: number;
+import { TransactionType } from '../types';
+
+type ExtractResult = {
+  amount: number;
   title: string;
   tags: string[];
   category?: string;
+  type: TransactionType;
 };
-export function extractMessage(message: string): Result {
+export function extractMessage(message: string): ExtractResult {
   const components = message.trim().split(' ');
 
   if (components.length === 0) {
     throw new Error('message is empty');
   }
 
-  const total = Number(components[0]);
-  if (isNaN(total)) {
+  const amountString = components[0];
+  const amount = Number(amountString);
+  if (isNaN(amount)) {
     throw new Error('total need to be a number');
+  }
+
+  let type = TransactionType.EXPENSE;
+  if (amountString.startsWith('+')) {
+    type = TransactionType.INCOME;
   }
 
   if (components.length === 1) {
     return {
-      total,
+      amount: Math.abs(amount),
       title: 'Untitled',
       tags: [],
+      type,
     };
   }
 
@@ -62,9 +72,10 @@ export function extractMessage(message: string): Result {
     textComponents.length > 0 ? textComponents.join(' ') : 'Untitled';
 
   return {
-    total,
+    amount,
     category,
     title,
     tags,
+    type,
   };
 }

@@ -2,7 +2,10 @@
   "extends": "fastify-tsconfig",
   "compilerOptions": {
     "outDir": "dist",
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
     "sourceMap": true,
+    "useUnknownInCatchVariables": false,
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"]
