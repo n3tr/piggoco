@@ -71,5 +71,5 @@ jobs:
           app-name: 'Spendot'
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_71E8A7AB08EB4418A0783B50129C1025 }}
-          images: 'spendot.azurecr.io/myapp:${{ github.sha }}'
+          images: 'spendot.azurecr.io/spendot:${{ github.sha }}'
           # package: .
