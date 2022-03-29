@@ -6,9 +6,8 @@ generator client {
 }
 
 datasource db {
-  provider          = "sqlserver"
+  provider          = "postgresql"
   url               = env("DATABASE_URL")
-  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
 
 model User {
@@ -39,8 +38,8 @@ model Wallet {
 model Category {
   id       String  @id @default(cuid()) @db.VarChar(32)
   walletId String  @db.VarChar(32)
-  slug     String  @db.NVarChar(32)
-  title    String? @db.NVarChar(64)
+  slug     String  @db.VarChar(32)
+  title    String? @db.VarChar(64)
 
   transactions Transaction[]
   wallet Wallet @relation(fields: [walletId], references: [id], onDelete: Cascade, onUpdate: Cascade)
@@ -53,7 +52,7 @@ model Transaction {
   walletId String  @db.VarChar(32)
   type     String  @db.VarChar(10)
   amount   Decimal
-  title    String? @db.NVarChar(256)
+  title    String? @db.VarChar(256)
 
   categoryId String? @db.VarChar(32)
 
@@ -69,7 +68,7 @@ model Transaction {
 
 model TransactionTag {
   transactionId String @db.VarChar(32)
-  tag           String @db.NVarChar(32)
+  tag           String @db.VarChar(32)
 
   transaction Transaction @relation(fields: [transactionId], references: [id], onDelete: Cascade)
 
