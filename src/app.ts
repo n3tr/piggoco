@@ -9,6 +9,7 @@ import messengerPlugin from './messenger/messenger.plugin';
 import messengerRoute from './messenger/messenger.route';
 import walletPlugin from './wallet/wallet.plugin';
 import userPlugin from './user/user.plugin';
+import path = require('path');
 
 export type AppOptions = {
   // Place your custom options for app below here.
@@ -18,7 +19,16 @@ const app: FastifyPluginAsync<AppOptions> = async (
   fastify,
   opts
 ): Promise<void> => {
-  // Place here your custom code!
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  fastify.register(require('fastify-static'), {
+    root: path.join(__dirname, '..', 'public'),
+    prefix: '/public/', // optional: default '/'
+  });
+
+  fastify.get('/privacy', (_, reply) => {
+    // @ts-expect-error sendFile is not typed
+    reply.sendFile('privacy.html');
+  });
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   fastify.register(require('fastify-raw-body'), {
     field: 'rawBody', // change the default request.rawBody property name
