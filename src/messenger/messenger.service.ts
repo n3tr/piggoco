@@ -60,7 +60,7 @@ export class MessengerService {
       type === TransactionType.EXPENSE ? EXPENSE_IMAGE : INCOME_IMAGE;
 
     if (title) {
-      computedTitle += `- ${title}`;
+      computedTitle += ` - ${title}`;
     }
 
     let subtitle = '';
