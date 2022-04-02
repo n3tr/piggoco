@@ -51,26 +51,28 @@ export class MessengerService {
       tags: TransactionTag[];
     }
   ) {
-    const { amount, type, title, category, tags } = transaction;
-    const computedTitle =
-      type === TransactionType.EXPENSE
-        ? `Spend ${amount}`
-        : `Receive ${amount}`;
+    const { amount: rawAmount, type, title, category, tags } = transaction;
+    const amount = rawAmount.toFixed(2);
+    let computedTitle =
+      type === TransactionType.EXPENSE ? `${amount}` : `+${amount}`;
 
     const image =
       type === TransactionType.EXPENSE ? EXPENSE_IMAGE : INCOME_IMAGE;
 
-    let subtitle = '';
     if (title) {
-      subtitle += title;
+      computedTitle += `- ${title}`;
     }
 
+    let subtitle = '';
     if (category) {
-      subtitle += `\n${category.title || category.slug}`;
+      subtitle += `${category.title || category.slug}`;
     }
 
     if (tags?.length) {
-      subtitle += `\n${tags.map((tag) => tag.tag).join(' ')}`;
+      if (subtitle) {
+        subtitle += '\n';
+      }
+      subtitle += `${tags.map((tag) => tag.tag).join(' ')}`;
     }
     const reqBody = {
       attachment: {
@@ -85,7 +87,7 @@ export class MessengerService {
               buttons: [
                 {
                   type: 'postback',
-                  title: 'Undo',
+                  title: 'Delete',
                   payload: JSON.stringify({
                     transactionId: transaction.id,
                   }),

@@ -86,7 +86,7 @@ const root: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
         });
 
         for (const message of messages) {
-          if (message.postback && message.postback.title === 'Undo') {
+          if (message.postback && message.postback.title === 'Delete') {
             const payload = JSON.parse(message.postback.payload) as {
               transactionId: string;
             };
