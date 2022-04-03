@@ -106,7 +106,7 @@ const root: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
           try {
             const extractedMessage = extractMessage(message.message.text);
 
-            const user = await fastify.userService.userByFbId(
+            const user = await fastify.userService.userByfbPsId(
               message.recipient.id,
               true
             );

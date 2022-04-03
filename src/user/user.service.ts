@@ -6,15 +6,18 @@ export class UserService {
     this.prisma = options.prismaClient;
   }
 
-  async userByFbId(fbId: string, createIfNotExist: true): Promise<User>;
-  async userByFbId(fbId: string, createIfNotExist: false): Promise<User | null>;
-  async userByFbId(
-    fbId: string,
+  async userByfbPsId(fbPsId: string, createIfNotExist: true): Promise<User>;
+  async userByfbPsId(
+    fbPsId: string,
+    createIfNotExist: false
+  ): Promise<User | null>;
+  async userByfbPsId(
+    fbPsId: string,
     createIfNotExist = false
   ): Promise<User | null> {
-    const user = await this.prisma.user.findFirst({ where: { fbId } });
+    const user = await this.prisma.user.findFirst({ where: { fbPsId } });
     if (!user && createIfNotExist) {
-      return this.prisma.user.create({ data: { fbId } });
+      return this.prisma.user.create({ data: { fbPsId } });
     }
 
     return user;
