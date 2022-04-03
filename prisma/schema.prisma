@@ -19,7 +19,25 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+
+  federatedAccounts FederatedAccount[]
+
   wallets Wallet[]
+}
+
+enum FederationProvider {
+  FACEBOOK_PAGE
+  FACEBOOK_APP
+}
+
+model FederatedAccount {
+  userId String  @db.VarChar(32)
+  provider FederationProvider
+  subject String @db.VarChar(32)
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([userId, provider, subject])
 }
 
 model Wallet {
