@@ -1,4 +1,4 @@
-import { PrismaClient, User } from '@prisma/client';
+import { FederationProvider, PrismaClient, User } from '@prisma/client';
 
 export class UserService {
   private prisma: PrismaClient;
@@ -15,11 +15,33 @@ export class UserService {
     fbPsId: string,
     createIfNotExist = false
   ): Promise<User | null> {
-    const user = await this.prisma.user.findFirst({ where: { fbPsId } });
-    if (!user && createIfNotExist) {
-      return this.prisma.user.create({ data: { fbPsId } });
+    const account = await this.prisma.federatedAccount.findFirst({
+      where: {
+        provider: FederationProvider.FACEBOOK_PAGE,
+        subject: fbPsId,
+      },
+      include: {
+        user: true,
+      },
+    });
+    if (account) {
+      const user = account.user;
+      return user;
+    }
+    if (createIfNotExist) {
+      return this.prisma.user.create({
+        data: {
+          fbPsId,
+          federatedAccounts: {
+            create: {
+              provider: FederationProvider.FACEBOOK_PAGE,
+              subject: fbPsId,
+            },
+          },
+        },
+      });
     }
 
-    return user;
+    return null;
   }
 }
