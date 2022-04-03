@@ -41,6 +41,9 @@ export class MessengerService {
     });
 
     const json = await body.json();
+    if (json.error) {
+      throw new Error(json.error.message);
+    }
     return json;
   }
 

@@ -107,7 +107,7 @@ const root: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
             const extractedMessage = extractMessage(message.message.text);
 
             const user = await fastify.userService.userByfbPsId(
-              message.recipient.id,
+              message.sender.id,
               true
             );
             const transaction = await fastify.walletService.addTransaction({
@@ -120,6 +120,7 @@ const root: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
               transaction
             );
           } catch (e) {
+            fastify.log.error(e.message, e);
             fastify.messengerService.sendMessage({
               recipient: message.sender.id,
               message: { text: e.message },
