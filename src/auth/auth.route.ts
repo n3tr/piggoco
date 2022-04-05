@@ -10,7 +10,7 @@ const auth: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
       {
         clientID: FacebookAppId,
         clientSecret: FacebookAppSecret,
-        callbackURL: '/auth/redirect/facebook',
+        callbackURL: 'https://piggo.co/auth/redirect/facebook',
         authType: 'reauthenticate',
         profileFields: ['id', 'emails', 'name', 'displayName'],
       },
