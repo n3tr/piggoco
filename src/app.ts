@@ -1,15 +1,26 @@
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-require('dotenv').config();
+import 'dotenv/config';
 
 import { join } from 'path';
+import fs from 'fs';
 import AutoLoad, { AutoloadPluginOptions } from 'fastify-autoload';
 import { FastifyPluginAsync } from 'fastify';
+import fastifySecureSession from 'fastify-secure-session';
 
-import messengerPlugin from './messenger/messenger.plugin';
-import messengerRoute from './messenger/messenger.route';
+import messengerPlugin from './facebook/messenger/messenger.plugin';
+import messengerRoute from './facebook/messenger/messenger.route';
+import authRoute from './auth/auth.route';
 import walletPlugin from './wallet/wallet.plugin';
 import userPlugin from './user/user.plugin';
-import path = require('path');
+import fastifyPassport from 'fastify-passport';
+import path from 'path';
+import facebookClientPlugin from './facebook/client';
+import {
+  FacebookAppAccessToken,
+  FacebookAppId,
+  FacebookPageId,
+  FacebookPageToken,
+  FacebookAppSecret,
+} from './config';
 
 export type AppOptions = {
   // Place your custom options for app below here.
@@ -38,6 +49,11 @@ const app: FastifyPluginAsync<AppOptions> = async (
     routes: [], // array of routes, **`global`** will be ignored, wildcard routes not supported
   });
 
+  fastify.register(fastifySecureSession, {
+    key: fs.readFileSync(path.join(__dirname, '..', 'secret-key')),
+  });
+  fastify.register(fastifyPassport.initialize());
+  fastify.register(fastifyPassport.secureSession());
   // Do not touch the following lines
 
   // This loads all plugins defined in plugins
@@ -55,10 +71,19 @@ const app: FastifyPluginAsync<AppOptions> = async (
   // This loads all plugins defined in routes
   // define your routes in one of these
   // Messenger
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  fastify.register(facebookClientPlugin, {
+    pageId: FacebookPageId,
+    pageAccessToken: FacebookPageToken,
+    appId: FacebookAppId,
+    appSecret: FacebookAppSecret,
+    appAccessToken: FacebookAppAccessToken,
+  });
   fastify.register(userPlugin);
   fastify.register(walletPlugin);
   fastify.register(messengerPlugin);
+
+  // Routes
+  fastify.register(authRoute);
   fastify.register(messengerRoute, { prefix: '/api' });
 };
 

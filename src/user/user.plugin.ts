@@ -7,8 +7,11 @@ import { UserService } from './user.service';
 export default fp(async (fastify) => {
   fastify.decorate(
     'userService',
-    new UserService({ prismaClient: fastify.prisma }),
-    ['prisma']
+    new UserService({
+      prismaClient: fastify.prisma,
+      fbClient: fastify.fbClient,
+    }),
+    ['prisma', 'fbClient']
   );
 });
 

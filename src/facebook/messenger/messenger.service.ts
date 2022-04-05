@@ -1,9 +1,9 @@
 import { request } from 'undici';
 import { JsonObject } from 'type-fest';
-import { FacebookPageToken } from '../config';
-import { extractMessage } from '../utils/extract-message';
-import { WalletService } from '../wallet/wallet.service';
-import { TransactionType } from '../types';
+import { FacebookPageToken } from '../../config';
+import { extractMessage } from '../../utils/extract-message';
+import { WalletService } from '../../wallet/wallet.service';
+import { TransactionType } from '../../types';
 import { Category, Transaction, TransactionTag } from '@prisma/client';
 
 const SEND_MESSENGE_ENDPOINT = 'https://graph.facebook.com/v13.0/me/messages';

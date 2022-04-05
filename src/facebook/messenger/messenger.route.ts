@@ -1,7 +1,7 @@
 import { FastifyPluginAsync } from 'fastify';
-import { FaebookAppSecret, FacebookAppWebhookSecret } from '../config';
-import { extractMessage } from '../utils/extract-message';
-import { verifyMessengerSignature } from '../utils/verify-messenger-signature';
+import { FacebookAppSecret, FacebookAppWebhookSecret } from '../../config';
+import { extractMessage } from '../../utils/extract-message';
+import { verifyMessengerSignature } from '../../utils/verify-messenger-signature';
 
 const VERIFY_TOKEN = FacebookAppWebhookSecret;
 
@@ -74,7 +74,7 @@ const root: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
       verifyMessengerSignature(
         request.rawBody,
         request.headers['x-hub-signature'] as string,
-        FaebookAppSecret
+        FacebookAppSecret
       );
       reply.status(200).send('EVENT_RECEIVED');
 
@@ -106,7 +106,7 @@ const root: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
           try {
             const extractedMessage = extractMessage(message.message.text);
 
-            const user = await fastify.userService.userByfbPsId(
+            const user = await fastify.userService.userByfbPageScopeId(
               message.sender.id,
               true
             );

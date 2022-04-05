@@ -6,6 +6,7 @@
     "noUnusedParameters": false,
     "sourceMap": true,
     "useUnknownInCatchVariables": false,
+    "esModuleInterop": true,
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"]
